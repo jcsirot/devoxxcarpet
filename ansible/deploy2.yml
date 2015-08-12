@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+
+  tasks:
+  - command: docker-machine config techtalklunch
+    register: docker_host
+
+  - name: Find the application container id
+    command: docker {{docker_host.stdout}} ps -q
+    register: container_id
+    ignore_errors: True
+
+  - name: Ensure the application is stopped
+    command: docker {{docker_host.stdout}} stop {{container_id.stdout}}
+    when: container_id.stdout != ""
+
+  - name: Deploy the new application
+    command: docker {{docker_host.stdout}} run -ti -e DATASTORE=false -d -p 80:8080 jcsirot/devoxxcarpet:{{image_tag}}
