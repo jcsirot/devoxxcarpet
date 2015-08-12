@@ -1,10 +1,10 @@
 ---
 - hosts: localhost
 
-  vars:
-    docker_host: "$(docker-machine config techtalklunch)"
-
   tasks:
+  - command: docker-machine config techtalklunch
+    register: docker_host
+
   - name: Build the new application docker image
     command: docker {{docker_host}} build -t jcsirot/devoxxcarpet ..
 
